@@ -2,65 +2,55 @@ library splash_view;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'utils/background_decoration.dart';
+import 'utils/done.dart';
 
 class SplashView extends StatefulWidget {
-  //////To display the logo/image of the splash view,
-  final Widget image;
-
-  /// To hide/show the loading.
-  final bool? showLoading;
-
-  /// To show loading to the bottom of the page.
-  final bool? bottomLoading;
-
-  /// Redirect to another page, when loading is completed.
-  final Widget home;
-
-  ///To display the title or name of you application.
-  final String title;
-
-  ///The [TextStyle] of the title.
-  final TextStyle? titleTextStyle;
-
-  ///  Redirected time (in seconds).
-  final int? seconds;
-
-  /// Background Color can be set using [backgroundColor]
+  ///  Background color of the splash view.
   final Color? backgroundColor;
 
-  /// The [Widget] of the loading indicator.
-  final Widget? loading;
+  /// Logo of the splash view.
+  final Widget? logo;
 
-  ///Background image can be set using [backgroundImage]
-  final ImageProvider<Object>? backgroundImage;
+  /// Title of the splash view.
+  final Widget? title;
 
-  ///The [BoxFit] of the background image.
-  final BoxFit? backgroundImageFit;
+  /// Subtitle of the splash view.
+  final Widget? subtitle;
 
-  ///The opacity of the background image.
-  final double? backgroundImageOpacity;
+  /// Loading indicator of the splash view.
+  final Widget? loadingIndicator;
 
-  ///The [ColorFilter] of the background image.
-  final ColorFilter? backgroundImageColorFilter;
+  /// Show loading indicator on the bottom of the splash view.
+  final bool bottomLoading;
 
+  /// Show and hide app status/navigation bar on the splash view.
+  final bool showStatusBar;
+
+  /// Gradient background of the splash view.
+  final Gradient? gradient;
+
+  /// Duration of redirecting to the next page.
+  final Duration? duration;
+
+  /// Background image of the splash view.
+  final BackgroundImageDecoration? backgroundImageDecoration;
+
+  /// [Done] widget to redirect to the next page.
+  final Done? done;
   const SplashView({
     Key? key,
-    required this.image,
-    required this.title,
-    required this.home,
-    this.seconds = 3,
-    this.showLoading = true,
+    this.backgroundImageDecoration,
     this.backgroundColor,
-    this.backgroundImage,
-    this.titleTextStyle = const TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 20,
-    ),
-    this.loading,
+    this.gradient,
+    this.logo,
+    this.title,
+    this.subtitle,
+    this.loadingIndicator,
     this.bottomLoading = false,
-    this.backgroundImageFit = BoxFit.cover,
-    this.backgroundImageOpacity = 1.0,
-    this.backgroundImageColorFilter,
+    this.duration = const Duration(seconds: 3),
+    this.done,
+    this.showStatusBar = false,
   }) : super(key: key);
 
   @override
@@ -68,9 +58,9 @@ class SplashView extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashView> {
-  /// Hide and show status bar.
-  _hideStatusBar(bool value) {
-    if (value == true) {
+  /// [hideStatusBar] is used to hide status bar on the splash view.
+  hideStatusBar(bool value) {
+    if (value == false) {
       SystemChrome.setEnabledSystemUIMode(
         SystemUiMode.manual,
         overlays: [],
@@ -88,22 +78,10 @@ class _SplashViewState extends State<SplashView> {
 
   @override
   void initState() {
-    _hideStatusBar(true);
-    Future.delayed(
-      Duration(seconds: widget.seconds!),
-      () => Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => widget.home,
-        ),
-      ),
-    );
+    hideStatusBar(widget.showStatusBar);
+    Future.delayed(widget.duration!,
+        () => Navigator.of(context).pushReplacement(widget.done!));
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _hideStatusBar(false);
-    super.dispose();
   }
 
   @override
@@ -113,40 +91,19 @@ class _SplashViewState extends State<SplashView> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
+          gradient: widget.gradient,
           color: widget.backgroundColor,
-          image: (widget.backgroundImage != null)
-              ? DecorationImage(
-                  image: widget.backgroundImage!,
-                  fit: widget.backgroundImageFit,
-                  opacity: widget.backgroundImageOpacity!,
-                  colorFilter: widget.backgroundImageColorFilter ??
-                      ColorFilter.mode(
-                        Colors.black.withOpacity(0.6),
-                        BlendMode.darken,
-                      ),
-                )
-              : null,
+          image: widget.backgroundImageDecoration,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            (widget.bottomLoading!) ? const Spacer() : const SizedBox(),
-            widget.image,
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                widget.title,
-                style: widget.titleTextStyle,
-              ),
-            ),
-            (widget.bottomLoading!) ? const Spacer() : const SizedBox(),
-            Visibility(
-              visible: widget.showLoading!,
-              child: widget.loading ?? const RefreshProgressIndicator(),
-            ),
-            (widget.bottomLoading!)
-                ? const SizedBox(height: 20)
-                : const SizedBox(),
+            (widget.bottomLoading) ? const Spacer() : const SizedBox(),
+            widget.logo ?? const SizedBox(),
+            widget.title ?? const SizedBox(),
+            widget.subtitle ?? const SizedBox(),
+            (widget.bottomLoading) ? const Spacer() : const SizedBox(),
+            widget.loadingIndicator ?? const SizedBox(),
           ],
         ),
       ),

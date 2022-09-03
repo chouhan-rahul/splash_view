@@ -4,12 +4,12 @@ import 'package:splash_view/splash_view.dart';
 
 void main() {
   runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
+    MaterialApp(
       home: SplashView(
-        image: FlutterLogo(),
-        title: "Dart Splash View",
-        home: Home(),
+        backgroundColor: Colors.red,
+        loadingIndicator: RefreshProgressIndicator(),
+        logo: FlutterLogo(),
+        done: Done(Home()),
       ),
     ),
   );
@@ -21,7 +21,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(),
+      body: Center(child: Text('Home Page')),
     );
   }
 }
