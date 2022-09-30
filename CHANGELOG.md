@@ -1,3 +1,5 @@
+# 2.0.1
+- The class done is not defined problem has been fixed.
 ## 2.0.0
 
 - The splash view has been restructured to make it more intuitive.
